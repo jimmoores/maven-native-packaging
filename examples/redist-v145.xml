@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.mcleodmoores.microsoft.visualstudio</groupId>
+	<artifactId>redist</artifactId>
+	<version>14.5</version>
+	<packaging>native-exec</packaging>
+
+	<name>Visual Studio Redistributables</name>
+	<description>Runtime libraries for the v145 toolset (VS 2026 / MSVC 14.5x)</description>
+
+	<properties>
+		<maven-native-packing.version>0.2.3</maven-native-packing.version>
+		<!-- Toolset version. v145 ships with VS 2026 (product version 18). -->
+		<visual.studio.int.version>145</visual.studio.int.version>
+		<!-- The exact MSVC redist directory under VC\Redist\MSVC.  This pins the runtime
+		     to a known build; bump if you upgrade VS and want to ship a newer redist. -->
+		<msvc.redist.version>14.50.35710</msvc.redist.version>
+		<!-- VS install root.  Adjust if your VS lives elsewhere or you have a different edition. -->
+		<vs.install.dir>C:\Program Files\Microsoft Visual Studio\18\Community</vs.install.dir>
+		<redist.path>${vs.install.dir}\VC\Redist\MSVC\${msvc.redist.version}</redist.path>
+		<crt.path>Microsoft.VC${visual.studio.int.version}.CRT</crt.path>
+		<mfc.path>Microsoft.VC${visual.studio.int.version}.MFC</mfc.path>
+		<crt.x86.release.path>${redist.path}/x86/${crt.path}</crt.x86.release.path>
+		<mfc.x86.release.path>${redist.path}/x86/${mfc.path}</mfc.x86.release.path>
+		<crt.x64.release.path>${redist.path}/x64/${crt.path}</crt.x64.release.path>
+		<mfc.x64.release.path>${redist.path}/x64/${mfc.path}</mfc.x64.release.path>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mcleodmoores.maven</groupId>
+				<artifactId>maven-native-packaging</artifactId>
+				<version>${maven-native-packing.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<defaults>windows</defaults>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-build</id>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-package-exec</id>
+						<configuration>
+							<executables>
+								<executable>
+									<arch>x86</arch>
+									<path>${crt.x86.release.path}</path>
+									<pattern>*.dll</pattern>
+								</executable>
+								<executable>
+									<arch>x86</arch>
+									<path>${mfc.x86.release.path}</path>
+									<pattern>*.dll</pattern>
+								</executable>
+								<executable>
+									<arch>x64</arch>
+									<path>${crt.x64.release.path}</path>
+									<pattern>*.dll</pattern>
+								</executable>
+								<executable>
+									<arch>x64</arch>
+									<path>${mfc.x64.release.path}</path>
+									<pattern>*.dll</pattern>
+								</executable>
+							</executables>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
